@@ -446,18 +446,31 @@ const Keyboard = {
       while (Keyboard.content.keyboardWrapper.firstChild) {
         Keyboard.content.keyboardWrapper.removeChild(Keyboard.content.keyboardWrapper.firstChild);
       }
-  
+      localStorage.setItem("lang", this.data.lang);
       Keyboard.content.keyboardWrapper.appendChild(Keyboard._buildKeys());
     },
-  
+
+    getLocalStorage() {
+      console.log(this.data.lang);
+      if(localStorage.getItem("lang")) {
+        const lang = localStorage.getItem("lang");
+        this.data.lang = lang;
+        while (Keyboard.content.keyboardWrapper.firstChild) {
+          Keyboard.content.keyboardWrapper.removeChild(Keyboard.content.keyboardWrapper.firstChild);
+        }
+        console.log(this.data.lang);
+        Keyboard.content.keyboardWrapper.appendChild(Keyboard._buildKeys());
+      }
+    },
+
     close() {
       this.data.text = "";
       this.eventHandlers.oninput = oninput;
       this.eventHandlers.onclose = onclose;
-    },
+    }
   };
   
   window.onload = function () {
-    console.log("Hello world!");
     Keyboard.renderKeyboard();
+    window.addEventListener("load", Keyboard.getLocalStorage());
   };
