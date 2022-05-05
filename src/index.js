@@ -184,7 +184,9 @@ const Keyboard = {
             break;
 
           default:
-            keyElement.textContent = key[0];
+            keyElement.innerText = this.data.upperCase
+              ? key[0].toUpperCase()
+              : key[0].toLowerCase();
 
             keyElement.addEventListener("click", () => {
               this.data.text
@@ -256,6 +258,7 @@ const Keyboard = {
         }
       }
     }
+    localStorage.setItem("caps", this.data.upperCase);
   },
 
   toggleLanguage() {
@@ -271,6 +274,14 @@ const Keyboard = {
     if (localStorage.getItem("lang")) {
       const currentLang = localStorage.getItem("lang");
       this.data.lang = currentLang;
+      while (Keyboard.content.keyboardWrapper.firstChild) {
+        Keyboard.content.keyboardWrapper.removeChild(Keyboard.content.keyboardWrapper.firstChild);
+      }
+      Keyboard.content.keyboardWrapper.appendChild(Keyboard.buildKeys());
+    }
+    if (localStorage.getItem("caps")) {
+      const currentCaps = localStorage.getItem("caps");
+      this.data.upperCase = currentCaps;
       while (Keyboard.content.keyboardWrapper.firstChild) {
         Keyboard.content.keyboardWrapper.removeChild(Keyboard.content.keyboardWrapper.firstChild);
       }
