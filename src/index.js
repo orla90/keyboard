@@ -1,4 +1,5 @@
 import "./styles.scss";
+import lang from "./translate.js";
 
 const Keyboard = {
   content: {
@@ -19,161 +20,6 @@ const Keyboard = {
   eventHandlers: {
     oninput: null,
     onclose: null
-  },
-
-  lang: {
-    en: [
-      [
-        ["1", "Digit1"],
-        ["2", "Digit2"],
-        ["3", "Digit3"],
-        ["4", "Digit4"],
-        ["5", "Digit5"],
-        ["6", "Digit6"],
-        ["7", "Digit7"],
-        ["8", "Digit8"],
-        ["9", "Digit9"],
-        ["0", "Digit0"],
-        ["-", "Minus"],
-        ["=", "Equal"],
-        ["backspace", "Backspace"]
-      ],
-      [
-        ["tab", "Tab"],
-        ["q", "KeyQ"],
-        ["w", "KeyW"],
-        ["e", "KeyE"],
-        ["r", "KeyR"],
-        ["t", "KeyT"],
-        ["y", "KeyY"],
-        ["u", "KeyU"],
-        ["i", "KeyI"],
-        ["o", "KeyO"],
-        ["p", "KeyP"],
-        ["[", "BracketLeft"],
-        ["]", "BracketRight"],
-        ["del", "Delete"]
-      ],
-      [
-        ["caps", "CapsLock"],
-        ["a", "KeyA"],
-        ["s", "KeyS"],
-        ["d", "KeyD"],
-        ["f", "KeyF"],
-        ["g", "KeyG"],
-        ["h", "KeyH"],
-        ["j", "KeyJ"],
-        ["k", "KeyK"],
-        ["l", "KeyL"],
-        [";", "Semicolon"],
-        ["\"", "Quote"],
-        ["\\", "Backslash"],
-        ["enter", "Enter"]
-      ],
-      [
-        ["shift", "ShiftLeft"],
-        ["z", "KeyZ"],
-        ["x", "KeyX"],
-        ["c", "KeyC"],
-        ["v", "KeyV"],
-        ["b", "KeyB"],
-        ["n", "KeyN"],
-        ["m", "KeyM"],
-        [",", "Comma"],
-        [".", "Period"],
-        ["↑", "ArrowUp"],
-        ["/", "Slash"],
-        ["shift", "ShiftRight"]
-      ],
-      [
-        ["ctrl", "ControlLeft"],
-        ["win", "MetaLeft"],
-        ["alt", "AltLeft"],
-        ["space", "Space"],
-        ["alt", "AltRight"],
-        ["←", "ArrowLeft"],
-        ["↓", "ArrowDown"],
-        ["→", "ArrowRight"],
-        ["ctrl", "ControlRight"]
-      ]
-    ],
-
-    rus: [
-      [
-        ["1", "Digit1"],
-        ["2", "Digit2"],
-        ["3", "Digit3"],
-        ["4", "Digit4"],
-        ["5", "Digit5"],
-        ["6", "Digit6"],
-        ["7", "Digit7"],
-        ["8", "Digit8"],
-        ["9", "Digit9"],
-        ["0", "Digit0"],
-        ["-", "Minus"],
-        ["=", "Equal"],
-        ["backspace", "Backspace"]
-      ],
-      [
-        ["tab", "Tab"],
-        ["й", "KeyQ"],
-        ["ц", "KeyW"],
-        ["у", "KeyE"],
-        ["к", "KeyR"],
-        ["е", "KeyT"],
-        ["н", "KeyY"],
-        ["г", "KeyU"],
-        ["ш", "KeyI"],
-        ["щ", "KeyO"],
-        ["з", "KeyP"],
-        ["х", "BracketLeft"],
-        ["ъ", "BracketRight"],
-        ["del", "Delete"]
-      ],
-      [
-        ["caps", "CapsLock"],
-        ["ф", "KeyA"],
-        ["ы", "KeyS"],
-        ["в", "KeyD"],
-        ["а", "KeyF"],
-        ["п", "KeyG"],
-        ["р", "KeyH"],
-        ["о", "KeyJ"],
-        ["л", "KeyK"],
-        ["д", "KeyL"],
-        ["ж", "Semicolon"],
-        ["э", "Quote"],
-        ["ё", "Backslash"],
-        ["enter", "Enter"]
-      ],
-
-      [
-        ["shift", "ShiftLeft"],
-        ["я", "KeyZ"],
-        ["ч", "KeyX"],
-        ["с", "KeyC"],
-        ["м", "KeyV"],
-        ["и", "KeyB"],
-        ["т", "KeyN"],
-        ["ь", "KeyM"],
-        ["б", "Comma"],
-        ["ю", "Period"],
-        ["↑", "ArrowUp"],
-        ["/", "Slash"],
-        ["shift", "ShiftRight"]
-      ],
-      [
-        ["ctrl", "ControlLeft"],
-        ["win", "MetaLeft"],
-        ["alt", "AltLeft"],
-        ["space", "Space"],
-        ["alt", "AltRight"],
-        ["←", "ArrowLeft"],
-        ["↓", "ArrowDown"],
-        ["→", "ArrowRight"],
-        ["ctrl", "ControlRight"]
-      ]
-    ]
   },
 
   renderKeyboard() {
@@ -247,7 +93,7 @@ const Keyboard = {
   buildKeys() {
     const fragment = document.createDocumentFragment();
 
-    this.lang[this.data.lang].forEach((keyLine) => {
+    lang[this.data.lang].forEach((keyLine) => {
       const keysLine = document.createElement("div");
       keysLine.classList.add("key-line");
 
@@ -259,21 +105,15 @@ const Keyboard = {
         keyElement.setAttribute("name", `${key[1]}`);
         keyElement.classList.add("keyboard__key");
 
-        const caseUpText = document.createElement("span");
-        caseUpText.classList.add("case-up");
-
-        const caseDownText = document.createElement("span");
-        caseDownText.classList.add("case-down");
-
-        const rusLang = document.createElement("div");
-        rusLang.classList.add("rus");
-
         switch (key[0]) {
           case "backspace":
             keyElement.innerText = `${key[0]}`.slice(0, 1).toUpperCase() + `${key[0]}`.slice(1);
             keyElement.addEventListener("click", () => {
-              this.data.text = this.data.text.slice(0, -1);
+              let cursorPosition = document.querySelector("textarea").selectionStart;
+              this.data.text = this.data.text.slice(0, cursorPosition - 1)
+              + this.data.text.slice(cursorPosition);
               this.triggerEvent("oninput");
+              document.querySelector("textarea").selectionStart = cursorPosition - 1;
             });
 
             break;
@@ -357,16 +197,6 @@ const Keyboard = {
             break;
         }
 
-        rusLang.appendChild(caseUpText);
-        rusLang.appendChild(caseDownText);
-        keyElement.appendChild(rusLang);
-
-        const enLang = rusLang.cloneNode(true);
-        enLang.classList.remove("rus");
-        enLang.classList.add("en");
-
-        keyElement.appendChild(enLang);
-
         keysLine.appendChild(keyElement);
         fragment.appendChild(keysLine);
       });
@@ -439,8 +269,8 @@ const Keyboard = {
 
   getLocalStorage() {
     if (localStorage.getItem("lang")) {
-      const lang = localStorage.getItem("lang");
-      this.data.lang = lang;
+      const currentLang = localStorage.getItem("lang");
+      this.data.lang = currentLang;
       while (Keyboard.content.keyboardWrapper.firstChild) {
         Keyboard.content.keyboardWrapper.removeChild(Keyboard.content.keyboardWrapper.firstChild);
       }
